@@ -1,7 +1,9 @@
 export default class Box
 {
-  public user: User;
+  public name: string;
 
-  /** List the mails in this box. */
+  public owner: User;  
+
+  /** List of Mails in this box. */
   public list: Mail[];
 }
