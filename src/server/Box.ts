@@ -1,4 +1,4 @@
-export default class Mailbox
+export default class Box
 {
   public user: User;
 
