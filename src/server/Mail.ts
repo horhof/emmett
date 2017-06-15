@@ -7,4 +7,6 @@ export default class Mail
   public subject: string;
 
   public text: string;
+
+  public sent: Date | null;
 }
