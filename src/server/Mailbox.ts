@@ -2,5 +2,6 @@ export default class Mailbox
 {
   public user: User;
 
-  public contents: Mail[];
+  /** List the mails in this box. */
+  public list: Mail[];
 }
