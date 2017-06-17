@@ -1,19 +1,15 @@
 import Mailbox from './Mailbox';
+import User from './User';
 
-/**
- * The Exchange indexes all the Boxes.
- */
+/** The exchange indexes mailboxes and delivers mails between them. */
 export default class Exchange
 {
   /** A mapping of unique addresses to Mailboxes. */
-  public boxes: { [address: string]: Mailbox }[];
+  public mailboxes: { [address: string]: Mailbox }[];
 
-  /** Publically-listed mailboxes. */
-  public public: Mailbox[];
-
-  public create(name: string): Mailbox
+  /** Add a new mailbox under the given name.*/
+  public add(name: string, mailbox: Mailbox): void
   {
-    this.boxes[name] = new Mailbox();
-    return this.boxes[name];
+    this.mailboxes[name] = mailbox;
   }
 }
