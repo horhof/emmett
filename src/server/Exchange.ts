@@ -12,4 +12,10 @@ export default class Exchange
   {
     this.mailboxes[name] = mailbox;
   }
+
+  public deliver(): void
+  {
+    // for each mailbox in this.mailboxes with something in its outbox, move the
+    // message into destination inbox.
+  }
 }
