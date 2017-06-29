@@ -17,20 +17,10 @@ export default class Mailbox
 {
   private inbox: Mail[];
 
-  /** The mailbox can be read only by providing this key, if present. */
-  private readKey: string | void;
-
   private outbox: Mail[];
 
-  /** The outbox can be written to only by providing this key. */
-  private writeKey: string;
-
-  constructor(keys: string[])
+  constructor()
   {
-    const [readKey, writeKey] = keys;
-    this.readKey = readKey;
-    this.writeKey = writeKey;
-
     this.inbox = [];
     this.outbox = [];
   }
@@ -42,11 +32,8 @@ export default class Mailbox
   }
 
   /** Accept a mail for delivery if the key matches. */
-  public enqueue(writeKey: string, mail: Mail): MaybeError
+  public enqueue(mail: Mail): MaybeError
   {
-    if (writeKey !== this.writeKey)
-      return new Error(`Write key did not match.`);
-
-    this.outbox.push()
+    this.outbox.push(mail);
   }
 }
