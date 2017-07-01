@@ -1,5 +1,5 @@
 import * as the from 'lodash';
-import Mail from './Mail';
+import Document from './Document';
 
 type MaybeError = Error | void;
 
@@ -15,20 +15,20 @@ type MaybeError = Error | void;
  */
 export default class Mailbox
 {
-  public inbox: Mail[] = [];
+  public inbox: Document[] = [];
 
-  public outbox: Mail[] = [];
+  public outbox: Document[] = [];
 
-  private unread: Mail[] = [];
+  private unread: Document[] = [];
 
   /** Accept an incoming mail from another mailbox. */
-  public accept(mail: Mail): MaybeError
+  public accept(mail: Document): MaybeError
   {
     this.inbox.push(mail);
   }
 
   /** Accept a mail for delivery if the key matches. */
-  public enqueue(mail: Mail): MaybeError
+  public enqueue(mail: Document): MaybeError
   {
     this.outbox.push(mail);
   }
@@ -37,7 +37,7 @@ export default class Mailbox
   {
     return the(this.outbox)
       .chain()
-      .filter((mail: Mail) => !mail.delivered)
+      .filter((mail: Document) => !mail.delivered)
       .thru(the.negate(the.isEmpty))
       .value();
   }

@@ -1,6 +1,6 @@
 import * as the from 'lodash';
 
-import Mail from './Mail';
+import Document from './Document';
 import Mailbox from './Mailbox';
 
 export default class Exchange
@@ -34,7 +34,7 @@ export default class Exchange
   }
 
   /** Deliver this mail to its recipient addresses on this exchange. */
-  public deliver(outgoing: Mail): void
+  public deliver(outgoing: Document): void
   {
     console.log(`#deliver> Mail=%j`, outgoing);
     const recipients = the(this.mailboxes).pick(outgoing.to).value();

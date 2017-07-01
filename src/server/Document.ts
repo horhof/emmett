@@ -1,6 +1,6 @@
 import Mailbox from "./Mailbox";
 
-export default class Mail
+export default class Document
 {
   public from: string;
 
