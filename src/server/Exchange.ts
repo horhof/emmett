@@ -1,17 +1,17 @@
 import * as the from 'lodash';
-
-import Document from './Document';
 import Box from './Box';
+import Document from './Document';
+import * as I from './Interfaces';
 
-interface BoxMap {
-  [address: string]: Box
-};
-
+/**
+ * I have a list of boxes that are indexed under unique addresses. I take care
+ * of delivering outgoing documents from one box to another.
+ */
 export default class Exchange
 {
-  public boxes: BoxMap = {};
+  public boxes: I.BoxMap = {};
 
-  /** Register this box with the exchange under this address, if available. */
+  /** I register this box within the exchange under this address, if available. */
   public register(address: string, box: Box): void
   {
     console.log(`#register> Address=%s Box=%j`, address, box);
@@ -22,7 +22,7 @@ export default class Exchange
     this.boxes[address] = box;
   }
 
-  /** Move any outboxed documents in this exchange to its recipients. */
+  /** I copy any outboxed documents awaiting delivery to their recipients. */
   public transfer(): void
   {
     console.log(`#transfer>`);
@@ -30,17 +30,17 @@ export default class Exchange
     the(this.boxes)
       .filter((box: Box) => box.needDelivery())
       .tap(x => { console.log(`#transfer> These are the outboxes for delivery. Mailboxes=%j`, x) })
-      .forEach((box, sender) => the(box.output)
+      .forEach((box, sender) => the(box.outbox)
         .tap(x => { console.log(`#transfer> This is onebox. Outbox=%j`, x) })
         .forEach(document => this.deliver(String(sender), document)));
   }
 
-  /** Deliver this document from this sender to its recipient. */
-  public deliver(sender: string, outgoingDoc: Document): void
+  /** I deliver this document from this sender to its recipients. */
+  private deliver(sender: string, outgoingDoc: Document): void
   {
-    console.log(`#deliver> Mail=%j`, outgoingDoc);
+    console.log(`#deliver> Sender=%s Doc=%j`, sender, outgoingDoc);
 
-    const recipients = <BoxMap>the(this.boxes)
+    const recipients = <I.BoxMap>the(this.boxes)
       .pick(outgoingDoc.to)
       .value();
 
