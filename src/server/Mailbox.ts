@@ -1,4 +1,4 @@
-import * as lo from 'lodash';
+import * as the from 'lodash';
 import Mail from './Mail';
 
 type MaybeError = Error | void;
@@ -15,15 +15,9 @@ type MaybeError = Error | void;
  */
 export default class Mailbox
 {
-  public inbox: Mail[];
+  public inbox: Mail[] = [];
 
-  public outbox: Mail[];
-
-  constructor()
-  {
-    this.inbox = [];
-    this.outbox = [];
-  }
+  public outbox: Mail[] = [];
 
   /** Accept an incoming mail from another mailbox. */
   public accept(mail: Mail): MaybeError
@@ -39,10 +33,10 @@ export default class Mailbox
 
   public needDelivery(): boolean
   {
-    return lo(this.outbox)
+    return the(this.outbox)
       .chain()
       .filter((mail: Mail) => !mail.delivered)
-      .thru(lo.negate(lo.isEmpty))
+      .thru(the.negate(the.isEmpty))
       .value();
   }
 }

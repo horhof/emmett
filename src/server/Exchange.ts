@@ -1,4 +1,4 @@
-import * as lo from 'lodash';
+import * as the from 'lodash';
 
 import Mail from './Mail';
 import Mailbox from './Mailbox';
@@ -21,12 +21,12 @@ export default class Exchange
   public transfer(): void
   {
     console.log(`#transfer>`);
-    lo(this.mailboxes)
+    the(this.mailboxes)
       .filter((mailbox: Mailbox) => mailbox.needDelivery())
       .tap(x => {
         console.log(`#transfer> These are the outboxes for delivery. Mailboxes=%j`, x);
       })
-      .forEach(mailbox => lo(mailbox.outbox)
+      .forEach(mailbox => the(mailbox.outbox)
         .tap(x => {
           console.log(`#transfer> This is onebox. Outbox=%j`, x);
         })
@@ -42,7 +42,7 @@ export default class Exchange
     if (!recipient)
       console.error(`No address by that name. Mail.To=%s`, outgoing.to);
 
-    const incoming = lo.clone(outgoing);
+    const incoming = the.clone(outgoing);
     recipient.inbox.push(incoming);
     outgoing.delivered = true;
   }
