@@ -17,7 +17,7 @@ export default class Exchange
     console.log(`#register> Address=%s Box=%j`, address, box);
 
     if (this.boxes[address])
-      return;
+      return console.error(`Address already taken. Address=%s`, address);
 
     this.boxes[address] = box;
   }
@@ -45,7 +45,7 @@ export default class Exchange
       .value();
 
     if (!recipients)
-      console.error(`No address by that name. To=%s`, outgoingDoc.to);
+      return console.error(`No address by that name. To=%s`, outgoingDoc.to);
 
     the(recipients)
       .forEach((recipient: Box, address: string) => {
