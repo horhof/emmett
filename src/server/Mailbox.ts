@@ -1,5 +1,5 @@
+import * as lo from 'lodash';
 import Mail from './Mail';
-import User from './User';
 
 type MaybeError = Error | void;
 
@@ -15,9 +15,9 @@ type MaybeError = Error | void;
  */
 export default class Mailbox
 {
-  private inbox: Mail[];
+  public inbox: Mail[];
 
-  private outbox: Mail[];
+  public outbox: Mail[];
 
   constructor()
   {
@@ -35,5 +35,14 @@ export default class Mailbox
   public enqueue(mail: Mail): MaybeError
   {
     this.outbox.push(mail);
+  }
+
+  public needDelivery(): boolean
+  {
+    return lo(this.outbox)
+      .chain()
+      .filter((mail: Mail) => !mail.delivered)
+      .thru(lo.negate(lo.isEmpty))
+      .value();
   }
 }
