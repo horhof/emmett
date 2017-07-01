@@ -1,7 +1,11 @@
+import * as Debug from 'debug';
 import * as the from 'lodash';
 import Box from './Box';
 import Document from './Document';
 import * as I from './Interfaces';
+
+const log = Debug(`Exchange`);
+const error = Debug(`Exchange`);
 
 /**
  * I have a list of boxes that are indexed under unique addresses. I take care
@@ -14,10 +18,10 @@ export default class Exchange
   /** I register this box within the exchange under this address, if available. */
   public register(address: string, box: Box): void
   {
-    console.log(`#register> Address=%s Box=%j`, address, box);
+    log(`#register> Address=%s Box=%o`, address, box);
 
     if (this.boxes[address])
-      return console.error(`Address already taken. Address=%s`, address);
+      return error(`Address already taken. Address=%s`, address);
 
     this.boxes[address] = box;
   }
@@ -25,27 +29,29 @@ export default class Exchange
   /** I copy any outboxed documents awaiting delivery to their recipients. */
   public transfer(): void
   {
-    console.log(`#transfer>`);
+    log(`#transfer>`);
 
     the(this.boxes)
-      .filter((box: Box) => box.needDelivery())
-      .tap(x => { console.log(`#transfer> These are the outboxes for delivery. Mailboxes=%j`, x) })
-      .forEach((box, sender) => the(box.outbox)
-        .tap(x => { console.log(`#transfer> This is onebox. Outbox=%j`, x) })
-        .forEach(document => this.deliver(String(sender), document)));
+      .pickBy((box: Box) => box.needDelivery())
+      .tap((boxes: I.BoxMap) => {
+        log(`#transfer> Boxes needing delivery. Boxes=%O`, the.keys(boxes));
+      })
+      .forEach((box: Box, sender: string) => the(box.outbox)
+        .tap(docs => { log(`#transfer> Processing box for %s. Docs=%o`, sender, docs) })
+        .forEach(document => this.deliver(sender, document)));
   }
 
   /** I deliver this document from this sender to its recipients. */
   private deliver(sender: string, outgoingDoc: Document): void
   {
-    console.log(`#deliver> Sender=%s Doc=%j`, sender, outgoingDoc);
+    log(`#deliver> Sender=%s Doc=%o`, sender, outgoingDoc);
 
     const recipients = <I.BoxMap>the(this.boxes)
       .pick(outgoingDoc.to)
       .value();
 
     if (!recipients)
-      return console.error(`No address by that name. To=%s`, outgoingDoc.to);
+      return error(`No address by that name. To=%s`, outgoingDoc.to);
 
     the(recipients)
       .forEach((recipient: Box, address: string) => {

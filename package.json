@@ -2,9 +2,11 @@
   "name": "emmett",
   "version": "0.1.0",
   "dependencies": {
+    "debug": "^2.6.8",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
+    "@types/debug": "0.0.29",
     "@types/lodash": "^4.14.68",
     "typescript": "^2.4.1"
   }
