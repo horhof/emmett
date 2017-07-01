@@ -8,7 +8,7 @@
     "noImplicitThis": true,
     "sourceMap": true
   },
-  "files": [
-    "src/server/Mailbox.ts"
+  "include": [
+    "src/server/*.ts"
   ]
 }
