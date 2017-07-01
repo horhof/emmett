@@ -3,50 +3,57 @@ import * as the from 'lodash';
 import Document from './Document';
 import Box from './Box';
 
+interface BoxMap {
+  [address: string]: Box
+};
+
 export default class Exchange
 {
-  public mailboxes: { [address: string]: Box } = {};
+  public boxes: BoxMap = {};
 
-  /** Register a mailbox under the given address. */
-  public register(address: string, mailbox: Box): void
+  /** Register this box with the exchange under this address, if available. */
+  public register(address: string, box: Box): void
   {
-    console.log(`#register> Address=%s Mailbox=%j`, address, mailbox);
-    if (this.mailboxes[address])
+    console.log(`#register> Address=%s Box=%j`, address, box);
+
+    if (this.boxes[address])
       return;
 
-    this.mailboxes[address] = mailbox;
+    this.boxes[address] = box;
   }
 
-  /** Move any outboxed mail to its destination. */
+  /** Move any outboxed documents in this exchange to its recipients. */
   public transfer(): void
   {
     console.log(`#transfer>`);
-    the(this.mailboxes)
-      .filter((mailbox: Box) => mailbox.needDelivery())
-      .tap(x => {
-        console.log(`#transfer> These are the outboxes for delivery. Mailboxes=%j`, x);
-      })
-      .forEach(mailbox => the(mailbox.outbox)
-        .tap(x => {
-          console.log(`#transfer> This is onebox. Outbox=%j`, x);
-        })
-        .forEach(mail => this.deliver(mail)));
+
+    the(this.boxes)
+      .filter((box: Box) => box.needDelivery())
+      .tap(x => { console.log(`#transfer> These are the outboxes for delivery. Mailboxes=%j`, x) })
+      .forEach((box, sender) => the(box.output)
+        .tap(x => { console.log(`#transfer> This is onebox. Outbox=%j`, x) })
+        .forEach(document => this.deliver(String(sender), document)));
   }
 
-  /** Deliver this mail to its recipient addresses on this exchange. */
-  public deliver(outgoing: Document): void
+  /** Deliver this document from this sender to its recipient. */
+  public deliver(sender: string, outgoingDoc: Document): void
   {
-    console.log(`#deliver> Mail=%j`, outgoing);
-    const recipients = the(this.mailboxes).pick(outgoing.to).value();
+    console.log(`#deliver> Mail=%j`, outgoingDoc);
+
+    const recipients = <BoxMap>the(this.boxes)
+      .pick(outgoingDoc.to)
+      .value();
 
     if (!recipients)
-      console.error(`No address by that name. Mail.To=%s`, outgoing.to);
+      console.error(`No address by that name. To=%s`, outgoingDoc.to);
 
-    const incoming = the.clone(outgoing);
     the(recipients)
       .forEach((recipient: Box, address: string) => {
-        recipient.inbox.push(incoming);
+        const incomingDoc = the(outgoingDoc).clone();
+        incomingDoc.from = sender;
+        recipient.accept(incomingDoc);
       });
-    outgoing.delivered = true;
+
+    outgoingDoc.delivered = true;
   }
 }

@@ -15,35 +15,35 @@ type MaybeError = Error | void;
  */
 export default class Box
 {
-  public inbox: Document[] = [];
+  public input: Document[] = [];
 
-  public outbox: Document[] = [];
+  public output: Document[] = [];
 
-  private unread: Document[] = [];
+  public pool: Document[] = [];
 
   /** Accept an incoming mail from another mailbox. */
-  public accept(mail: Document): MaybeError
+  public accept(document: Document): MaybeError
   {
-    this.inbox.push(mail);
+    this.input.push(document);
   }
 
   /** Accept a mail for delivery if the key matches. */
-  public enqueue(mail: Document): MaybeError
+  public enqueue(document: Document): MaybeError
   {
-    this.outbox.push(mail);
+    this.output.push(document);
   }
 
   public needDelivery(): boolean
   {
-    return the(this.outbox)
+    return the(this.output)
       .chain()
-      .filter((mail: Document) => !mail.delivered)
+      .filter((document: Document) => !document.delivered)
       .thru(the.negate(the.isEmpty))
       .value();
   }
 
   public haveUnread(): boolean
   {
-    return this.unread.length > 0;
+    return this.input.length > 0;
   }
 }
