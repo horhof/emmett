@@ -1,4 +1,4 @@
-import Box from "./Box";
+import Box from './Box';
 
 export default class Document
 {
@@ -10,6 +10,5 @@ export default class Document
 
   public body: string;
 
-  /** Whether this document is in its final box or is up for delivery. */
   public delivered: boolean = false;
 }

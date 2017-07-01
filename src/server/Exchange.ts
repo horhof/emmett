@@ -53,7 +53,5 @@ export default class Exchange
         incomingDoc.from = sender;
         recipient.accept(incomingDoc);
       });
-
-    outgoingDoc.delivered = true;
   }
 }
