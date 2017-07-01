@@ -1,4 +1,4 @@
-import Mailbox from "./Mailbox";
+import Box from "./Box";
 
 export default class Document
 {

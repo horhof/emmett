@@ -13,7 +13,7 @@ type MaybeError = Error | void;
  * Outgoing messages can be read with the read key as well, but are accepted for
  * writing only with a write key.
  */
-export default class Mailbox
+export default class Box
 {
   public inbox: Document[] = [];
 

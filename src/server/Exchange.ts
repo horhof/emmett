@@ -1,14 +1,14 @@
 import * as the from 'lodash';
 
 import Document from './Document';
-import Mailbox from './Mailbox';
+import Box from './Box';
 
 export default class Exchange
 {
-  public mailboxes: { [address: string]: Mailbox } = {};
+  public mailboxes: { [address: string]: Box } = {};
 
   /** Register a mailbox under the given address. */
-  public register(address: string, mailbox: Mailbox): void
+  public register(address: string, mailbox: Box): void
   {
     console.log(`#register> Address=%s Mailbox=%j`, address, mailbox);
     if (this.mailboxes[address])
@@ -22,7 +22,7 @@ export default class Exchange
   {
     console.log(`#transfer>`);
     the(this.mailboxes)
-      .filter((mailbox: Mailbox) => mailbox.needDelivery())
+      .filter((mailbox: Box) => mailbox.needDelivery())
       .tap(x => {
         console.log(`#transfer> These are the outboxes for delivery. Mailboxes=%j`, x);
       })
@@ -44,7 +44,7 @@ export default class Exchange
 
     const incoming = the.clone(outgoing);
     the(recipients)
-      .forEach((recipient: Mailbox, address: string) => {
+      .forEach((recipient: Box, address: string) => {
         recipient.inbox.push(incoming);
       });
     outgoing.delivered = true;
