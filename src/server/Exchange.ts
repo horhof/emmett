@@ -33,17 +33,20 @@ export default class Exchange
         .forEach(mail => this.deliver(mail)));
   }
 
-  /** Deliver this mail to this address on the exchange. */
+  /** Deliver this mail to its recipient addresses on this exchange. */
   public deliver(outgoing: Mail): void
   {
     console.log(`#deliver> Mail=%j`, outgoing);
-    const recipient = this.mailboxes[outgoing.to];
+    const recipients = the(this.mailboxes).pick(outgoing.to).value();
 
-    if (!recipient)
+    if (!recipients)
       console.error(`No address by that name. Mail.To=%s`, outgoing.to);
 
     const incoming = the.clone(outgoing);
-    recipient.inbox.push(incoming);
+    the(recipients)
+      .forEach((recipient: Mailbox, address: string) => {
+        recipient.inbox.push(incoming);
+      });
     outgoing.delivered = true;
   }
 }
