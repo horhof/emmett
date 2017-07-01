@@ -13,8 +13,6 @@ export default class Mail
 
   public sent: Date | null;
 
-  public read: boolean = false;
-
   /** Whether this Mail is in its final Mailbox or is up for delivery. */
   public delivered: boolean = false;
 }

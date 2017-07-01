@@ -19,6 +19,8 @@ export default class Mailbox
 
   public outbox: Mail[] = [];
 
+  private unread: Mail[] = [];
+
   /** Accept an incoming mail from another mailbox. */
   public accept(mail: Mail): MaybeError
   {
@@ -38,5 +40,10 @@ export default class Mailbox
       .filter((mail: Mail) => !mail.delivered)
       .thru(the.negate(the.isEmpty))
       .value();
+  }
+
+  public haveUnread(): boolean
+  {
+    return this.unread.length > 0;
   }
 }
