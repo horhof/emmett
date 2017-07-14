@@ -1,3 +1,13 @@
+/**
+ * Box:
+ * - pool
+ * - map
+ * - accept: document, name?
+ * - enqueue: document
+ * - outbox
+ * - need delivery?
+ */
+
 import * as the from 'lodash';
 import Document from './Document';
 import * as I from './Interfaces';
