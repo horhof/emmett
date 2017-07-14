@@ -30,7 +30,7 @@ export default class BoxCtrl
     const box = this.exchange.lookupAddress(address);
 
     if (!box)
-      return res.json(400, `Nothing at that address.`);
+      return this.handleNonExistantAddress(address, res);
 
     res.json(box);
   }
@@ -43,13 +43,11 @@ export default class BoxCtrl
     const box = this.exchange.lookupAddress(address);
 
     if (!box)
-      return res.json(400, `Nothing at that address.`);
+      return this.handleNonExistantAddress(address, res);
 
     const documents = the(box.pool)
       .map((document, id) => the(document)
-        .tap(x => log('1=%O', x))
         .pick(['id', 'time', 'from', 'seen'])
-        .tap(x => log('2=%O', x))
         .assign({id}));
 
     res.json(documents);

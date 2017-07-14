@@ -2,6 +2,7 @@
  * Box:
  * - push: document
  * - send: document
+ * - read: document ID
  */
 
 import * as Debug from 'debug';
@@ -35,6 +36,7 @@ export default class Box
     this.pool.push(document);
   }
 
+  /** I return the document with this ID. */
   public read(documentId: number): Maybe<Document>
   {
     const document = this.pool[documentId];
