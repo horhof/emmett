@@ -1,20 +1,28 @@
 /**
  * Exchange:
+ * - name
  * - boxes
  * - register: address
+ * - lookup address: address
+ * - lookup addresses: [address]
  */
 
 import * as Debug from 'debug';
 import * as the from 'lodash';
 import Box from './Box';
 import Document from './Document';
-import { BoxMap, Either, Maybe } from './Interfaces';
+import { Maybe } from './Interfaces';
+
+interface BoxMap {
+  [address: string]: Box
+};
 
 const log = Debug(`Emmett:Exchange`);
 const error = Debug(`Emmett:Exchange`);
 
 export default class Exchange
 {
+  /** The exchange's identifier. Box addresses will be box-address@exchange-name. */
   public name: string;
 
   public boxes: BoxMap = {};
@@ -24,44 +32,50 @@ export default class Exchange
     this.name = name;
   }
 
-  /** I create a new box at the address if it's free and return the new box, else an error. */
-  public register(address: string): Either<Box>
+  /**
+   * I create a new box at the address if it's free.
+   * 
+   * @return Error if the address is taken.
+   */
+  public register(address: string): Maybe<Error>
   {
-    log(`#register> Address=%s`, address);
+    if (this.lookupAddress(address))
+      return new Error(`Address '${address}' has already been registered.`);
 
-    if (this.boxes[address])
-      return new Error(`Address already taken. Address=${address}`);
+    log(`#register> Address '%s' is available.`, address);
 
     const send = (document: Document) => this.accept(address, document);
-    const box = new Box(send);
-
-    this.boxes[address] = box;
-
-    return box;
+    this.boxes[address] = new Box(send);
+    log(`#register> Box registered.`);
   }
 
-  public lookup(address: string): Maybe<Box>
+  /** I return the box for the address if it's registered. */
+  public lookupAddress(address: string): Maybe<Box>
   {
     return this.boxes[address];
   }
 
-  /** I return a map of the addresses which are valid. */
-  public validateAddresses(addresses: string[]): BoxMap
+  /**
+   * I return a box map for any addresses which were valid.
+   * 
+   * When no addresses are valid, an empty map is returned.
+   * 
+   * @param addresses E.g. `["edward", "wallace"]`.
+   */
+  public lookupAddresses(addresses: string[]): BoxMap
   {
     log(`#validateAddresses> List=%o`, addresses);
-
-    return <BoxMap>the(this.boxes)
-      .tap(x => {
-        log(`#validateAddresses> 1=%j`, x);
-      })
-      .pick(addresses)
-      .tap(x => {
-        log(`#validateAddresses> 2=%o`, x);
-      })
-      .value();
+    return <BoxMap>the(this.boxes).pick(addresses).value();
   }
 
-  /** I send the document to its recipients (if they exist) from the sender. */
+  /**
+   * I send the document to its recipients (if they exist) from the sender.
+   * 
+   * This method is wired internally to each of the boxes that are created so
+   * that they will always send with the addresses that the exchange gave them.
+   * 
+   * @return Error if recipient list is empty or invalid.
+   */
   private accept(sender: string, document: Document): Maybe<Error>
   {
     document.from = sender;
@@ -70,7 +84,7 @@ export default class Exchange
     if (!document.to)
       return new Error(`No recipients listed.`);
 
-    const recipients = this.validateAddresses(document.to);
+    const recipients = this.lookupAddresses(document.to);
 
     if (the.keys(recipients).length < 1)
       return new Error(`No valid recipients.`);
@@ -81,7 +95,8 @@ export default class Exchange
       .forEach((recipient: Box, address: string) => {
         const copy = the(document).clone();
         copy.from = sender;
-        copy.timestamp = new Date();
+        copy.to = [address];
+        copy.time = new Date();
         recipient.push(copy);
       });
   }

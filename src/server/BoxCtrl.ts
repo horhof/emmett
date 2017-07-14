@@ -4,7 +4,6 @@ import * as restify from 'restify';
 
 const log = Debug(`Emmett:Ctrl:Box`);
 
-import * as Api from './Api';
 import Box from './Box';
 import Document from './Document';
 import Exchange from './Exchange';
@@ -16,21 +15,19 @@ export default class BoxCtrl
   constructor(server: restify.Server, exchange: Exchange)
   {
     this.exchange = exchange;
-    this.setupRoutes(server);
+
+    server.get('/boxes/:address', this.readBox.bind(this));
+    server.get('/boxes/:address/documents', this.listDocuments.bind(this));
+    server.post('/boxes/:address/documents', this.createDocument.bind(this));
+    server.get('/boxes/:address/documents/:id', this.readDocument.bind(this));
   }
 
-  private setupRoutes(server: restify.Server): void
-  {
-    server.get('/boxes/:address', this.getBox.bind(this));
-    server.post('/boxes/:address/documents', this.postDocument.bind(this));
-  }
-
-  private getBox(req: restify.Request, res: restify.Response): void
+  private readBox(req: restify.Request, res: restify.Response): void
   {
     const address = the(req).get('params.address', '');
     log(`GET /boxes/%s`, address);
 
-    const box = this.exchange.boxes[address];
+    const box = this.exchange.lookupAddress(address);
 
     if (!box)
       return res.json(400, `Nothing at that address.`);
@@ -38,42 +35,89 @@ export default class BoxCtrl
     res.json(box);
   }
 
-  private postDocument(req: restify.Request, res: restify.Response): void
+  private listDocuments(req: restify.Request, res: restify.Response): void
   {
-    // Get sender's address from the URI.
-    const sender = the(req).get('params.address', '');
-    log(`POST /boxes/%s/documents`, sender);
+    const address = the(req).get('params.address', '');
+    log(`GET /boxes/%s/documents`, address);
 
-    // Create the document from the request body.
-    const body = the(req).get('body');
-    const document = new Document(body);
-    log(`Created Document=%O`, document)
-
-    if (!document.valid)
-      return res.json(400, {
-        message: `Document was invalid.`,
-        document
-      });
-    
-  //const recipients = this.exchange.validateAddresses(document.to);
-//
-  //if (the.keys(recipients).length <= 0)
-  //  return res.json(400, {
-  //    message: `Invalid recipient list.`,
-  //    recipients
-  //  });
-
-    const box = this.exchange.lookup(sender);
+    const box = this.exchange.lookupAddress(address);
 
     if (!box)
-      return res.json(400, { message: `No box with that address.` });
+      return res.json(400, `Nothing at that address.`);
 
-    const err = box.send(document);
-    log(`Err=%O`, err);
+    const documents = the(box.pool)
+      .map((document, id) => the(document)
+        .tap(x => log('1=%O', x))
+        .pick(['id', 'time', 'from', 'seen'])
+        .tap(x => log('2=%O', x))
+        .assign({id}));
 
-    if (err)
-      return res.json(400, { message: err.message });
+    res.json(documents);
+  }
 
-    return res.json(`Sent message to ${sender}.`);
+  private createDocument(req: restify.Request, res: restify.Response): void
+  {
+    // Get sender's address from the URI.
+    const sender: string = the(req).get('params.address', '');
+    log(`POST /boxes/%s/documents`, sender);
+    
+    // Get control of the sender's mailbox.
+    const box = this.exchange.lookupAddress(sender);
+
+    if (!box)
+      return this.handleNonExistantAddress(sender, res);
+
+    log(`Sender box is valid.`);
+
+    // Create the document from the request body.
+    const body: any = the(req).get('body');
+    const document = new Document(body);
+
+    if (!document.valid)
+      return res.json(400, {message: `Document was invalid.`, document});
+
+    log(`Document is valid.`);
+
+    // Send the document from the sender's mailbox.
+    const error = box.send(document);
+
+    if (error)
+      return res.json(400, {message: `Failed to send document.`, error});
+
+    log(`Document sent.`);
+
+    const recipients = the(document.to).map(x => `'${x}'`).join(', ');
+    return res.json({message: `Sent message to ${recipients}.`});
+  }
+
+  private readDocument(req: restify.Request, res: restify.Response): void
+  {
+    // Get the owner's box address and the document ID.
+    const owner: string = the(req).get('params.address', '');
+    const documentId = Number(the(req).get('params.id'));
+    log(`GET /boxes/%s/documents/%d`, owner, documentId);
+
+    // See if that box exists.
+    const box = this.exchange.lookupAddress(owner);
+
+    if (!box)
+      return this.handleNonExistantAddress(owner, res);
+
+    // See if that document exists in the box.
+    const document = box.read(documentId);
+
+    if (!document)
+      return res.json(400, {message: `Non-existent document.`, documentId})
+
+    res.send(document);
+  }
+
+  private handleNonExistantAddress(address: string, res: restify.Response): void
+  {
+    res.json(400, {
+      message: `No box with that address.`,
+      address,
+      exchange: this.exchange
+    });
   }
 }

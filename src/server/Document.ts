@@ -4,6 +4,7 @@
  * - to
  * - body
  * - timestamp
+ * - seen
  */
 
 import Box from './Box';
@@ -23,14 +24,17 @@ export default class Document
   public readonly body: string;
 
   /** The time that the exchange delivered this copy of a document. */
-  public timestamp: Date;
+  public time: Date;
+
+  public seen: boolean = false;
 
   public readonly valid: boolean = true;
 
-  constructor(raw: { [index: string]: any } = {})
+  constructor(raw: any)
   {
     this.to = raw['to'];
     this.from = raw['from'];
     this.body = raw['body'];
+    console.log(this);
   }
 }
