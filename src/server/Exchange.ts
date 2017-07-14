@@ -1,63 +1,88 @@
+/**
+ * Exchange:
+ * - boxes
+ * - register: address
+ */
+
 import * as Debug from 'debug';
 import * as the from 'lodash';
 import Box from './Box';
 import Document from './Document';
-import * as I from './Interfaces';
+import { BoxMap, Either, Maybe } from './Interfaces';
 
-const log = Debug(`Exchange`);
-const error = Debug(`Exchange`);
+const log = Debug(`Emmett:Exchange`);
+const error = Debug(`Emmett:Exchange`);
 
-/**
- * I have a list of boxes that are indexed under unique addresses. I take care
- * of delivering outgoing documents from one box to another.
- */
 export default class Exchange
 {
-  public boxes: I.BoxMap = {};
+  public name: string;
 
-  /** I register this box within the exchange under this address, if available. */
-  public register(address: string, box: Box): void
+  public boxes: BoxMap = {};
+
+  constructor(name: string)
   {
-    log(`#register> Address=%s Box=%o`, address, box);
+    this.name = name;
+  }
+
+  /** I create a new box at the address if it's free and return the new box, else an error. */
+  public register(address: string): Either<Box>
+  {
+    log(`#register> Address=%s`, address);
 
     if (this.boxes[address])
-      return error(`Address already taken. Address=%s`, address);
+      return new Error(`Address already taken. Address=${address}`);
+
+    const send = (document: Document) => this.accept(address, document);
+    const box = new Box(send);
 
     this.boxes[address] = box;
+
+    return box;
   }
 
-  /** I copy any outboxed documents awaiting delivery to their recipients. */
-  public transfer(): void
+  public lookup(address: string): Maybe<Box>
   {
-    log(`#transfer>`);
+    return this.boxes[address];
+  }
 
-    the(this.boxes)
-      .pickBy((box: Box) => box.needDelivery())
-      .tap((boxes: I.BoxMap) => {
-        log(`#transfer> Boxes needing delivery. Boxes=%O`, the.keys(boxes));
+  /** I return a map of the addresses which are valid. */
+  public validateAddresses(addresses: string[]): BoxMap
+  {
+    log(`#validateAddresses> List=%o`, addresses);
+
+    return <BoxMap>the(this.boxes)
+      .tap(x => {
+        log(`#validateAddresses> 1=%j`, x);
       })
-      .forEach((box: Box, sender: string) => the(box.outbox)
-        .tap(docs => { log(`#transfer> Processing box for %s. Docs=%o`, sender, docs) })
-        .forEach(document => this.deliver(sender, document)));
+      .pick(addresses)
+      .tap(x => {
+        log(`#validateAddresses> 2=%o`, x);
+      })
+      .value();
   }
 
-  /** I deliver this document from this sender to its recipients. */
-  private deliver(sender: string, outgoingDoc: Document): void
+  /** I send the document to its recipients (if they exist) from the sender. */
+  private accept(sender: string, document: Document): Maybe<Error>
   {
-    log(`#deliver> Sender=%s Doc=%o`, sender, outgoingDoc);
+    document.from = sender;
+    log(`#accept> Document=%O`, document);
 
-    const recipients = <I.BoxMap>the(this.boxes)
-      .pick(outgoingDoc.to)
-      .value();
+    if (!document.to)
+      return new Error(`No recipients listed.`);
 
-    if (!recipients)
-      return error(`No address by that name. To=%s`, outgoingDoc.to);
+    const recipients = this.validateAddresses(document.to);
+
+    if (the.keys(recipients).length < 1)
+      return new Error(`No valid recipients.`);
+
+    log(`#accept> The recipient list is valid=%O`, recipients);
 
     the(recipients)
       .forEach((recipient: Box, address: string) => {
-        const incomingDoc = the(outgoingDoc).clone();
-        incomingDoc.from = sender;
-        recipient.accept(incomingDoc);
+        const copy = the(document).clone();
+        copy.from = sender;
+        copy.timestamp = new Date();
+        recipient.push(copy);
       });
   }
 }
