@@ -2,19 +2,16 @@
   "name": "emmett",
   "version": "0.1.0",
   "dependencies": {
-    "chalk": "^2.0.1",
-    "debug": "^2.6.8",
     "lodash": "^4.17.4",
     "restify": "^5.0.0",
-    "restify-cors-middleware": "^1.0.0"
+    "debug": "^2.6.8"
   },
   "devDependencies": {
-    "@types/angular": "^1.6.26",
-    "@types/chalk": "^0.4.31",
-    "@types/debug": "0.0.29",
     "@types/lodash": "^4.14.68",
-    "@types/restangular": "^1.5.38",
     "@types/restify": "^5.0.0",
+    "@types/debug": "0.0.29",
+    "@types/angular": "^1.6.26",
+    "@types/restangular": "^1.5.38",
     "typescript": "^2.4.1"
   }
 }
