@@ -39,7 +39,11 @@ export default class Box
   /** I return the document with this ID. */
   public read(documentId: number): Maybe<Document>
   {
-    const document = this.pool[documentId];
+    const document: Document | void = this.pool[documentId];
+    if (!document)
+      return log(`#read> Document ID %d not found.`, documentId);
+
+    log(`#read> Document=%o`, document);
     document.seen = true;
     return document;
   }
