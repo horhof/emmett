@@ -6,6 +6,8 @@ export class Client
 
   public user: string;
 
+  public newBox: string;
+
   public to: string;
 
   public documents: any[];
@@ -50,17 +52,21 @@ export class Client
   public getDocument(id: number): void
   {
     log(`#getDocument> ID=${id}`);
-    this.document = this.rest
+    this.rest
       .one('boxes', this.user)
       .one('documents', id)
-      .get().$object;
-    this.body = this.document.body;
+      .get()
+      .then(document => {
+        log(`doc callback`, document, `body<${document.body}>`);
+        this.body = document.body;
+      });
   }
 
   public send(): void
   {
     log(`#send> User=${this.user} Body=${this.body}`);
-    this.rest.one('boxes', this.user)
+    this.rest
+      .one('boxes', this.user)
       .all('documents')
       .post({
         to: this.to.split(','),
@@ -70,12 +76,25 @@ export class Client
         this.response = res.message
         this.body = '';
         this.to = '';
-        log(`body=`, this.body);
+        this.getBoxes();
       });
   }
 
   public get date(): string
   {
     return new Date().toISOString();
+  }
+
+  public createBox(): void
+  {
+    log(this.rest);
+    log(`#createBox> Box=${this.newBox}`);
+
+    this.rest
+      .one('boxes', this.newBox)
+      .post(undefined, undefined)
+      .then(() => {
+        this.getBoxes();
+      });
   }
 }

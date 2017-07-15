@@ -35,18 +35,26 @@
         width: 100%;
         outline: none;
       }
+      #debug {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <div class="container" ng-controller="client as vm">
 
 <pre>
+BOXES
 {{"Mailbox"|right:12}} {{"Messages"|left:12}}
 ---------------- --------
 <p ng-repeat="box in vm.boxes">
 <a href="" ng-click="vm.setUser(box.address)">{{box.address|right:12}}</a> {{box.size|left:12}}
 <p>
 <a href="" ng-click="vm.getBoxes()">{{"Get"|left:25}}</a>
+
+CREATE BOX
+{{"New box:"|left:12}} <input ng-model="vm.newBox">
+<a href="" ng-click="vm.createBox()">Create</a>
 
 HEADERS
 {{"No."|right:4}} {{"From"|right:12}} Date
@@ -67,12 +75,16 @@ COMPOSE
 {{"To:"|left:12}} <input ng-model="vm.to">
 {{"Date:"|left:12}} {{vm.date}}
 --------------------------------------------------------------------------------
-<textarea rows="20">{{vm.body}}</textarea>
+<textarea rows="20" ng-model="vm.body"></textarea>
 <a href="" ng-click="vm.send()">Send</a>
 
 Response: {{vm.response}}
 </pre>
 
+
+<pre id="debug">
+{{vm|json}}
+</pre>
     </div>
     <script data-main="setup.js" type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
   </body>
