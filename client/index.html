@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Emmett</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+    <style>
+      body {
+        background-color: #222;
+        color: white;
+      }
+      a {
+        color: #1e8ccc;
+        text-decoration: none;
+      }
+      pre {
+        font-family: monospace;
+        font-size: 16px;
+        margin: 1em;
+        line-height: 1.15;
+      }
+      p {
+        margin: 0;
+        margin-top: -1em;
+        margin-bottom: -1em;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" ng-controller="client as vm">
+
+<pre>
+{{"Mailbox"|right:12}} {{"Messages"|left:12}}
+---------------- --------
+<p ng-repeat="box in vm.boxes">
+<a href="" ng-click="vm.setUser(box.address)">{{box.address|right:12}}</a> {{box.size|left:12}}
+<p>
+<a href="" ng-click="vm.getBoxes()">{{"Get"|left:25}}</a>
+
+{{"User:"}} {{vm.user|right:12}}
+
+{{"No."|right:4}} {{"From"|right:12}} Date
+---- ------------ ------------------------
+<p ng-repeat="doc in vm.documents">
+<a href="" ng-click="vm.getDocument(doc.id)">#{{doc.id|left:3}}</a> {{doc.from|right:12}} {{doc.time}}
+<p>
+
+Body
+----
+{{vm.document.body}}
+</pre>
+
+    </div>
+    <script data-main="setup.js" type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+  </body>
+</html>

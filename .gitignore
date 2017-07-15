@@ -1,4 +1,5 @@
-/src/**/*.js
-/src/**/*.js.map
+/**/*.js
+!/client/setup.js
+/**/*.js.map
 /node_modules
 /resources
