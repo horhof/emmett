@@ -12,7 +12,9 @@ export class Client
 
   public document: any;
 
-  public body: string;
+  public body: string = '';
+
+  public response: string = '';
 
   private rest: Restangular.IService;
 
@@ -20,7 +22,6 @@ export class Client
 
   constructor(Restangular: Restangular.IService)
   {
-    Restangular.setBaseUrl('http://localhost:4096');
     this.rest = Restangular;
     this.getBoxes();
   }
@@ -58,10 +59,13 @@ export class Client
 
   public send(): void
   {
-    log(`#send>`);
-    this.rest
-      .one('boxes', this.user)
+    log(`#send> User=${this.user} Body=${this.body}`);
+    this.rest.one('boxes', this.user)
       .all('documents')
-      .post(this.body);
+      .post({
+        to: this.to.split(','),
+        body: this.body
+      })
+      .then(res => this.response = res.message);
   }
 }
