@@ -59,6 +59,7 @@ export class Client
       .then(document => {
         log(`doc callback`, document, `body<${document.body}>`);
         this.body = document.body;
+        this.getDocuments();
       });
   }
 

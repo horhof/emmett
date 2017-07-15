@@ -57,10 +57,10 @@ CREATE BOX
 <a href="" ng-click="vm.createBox()">Create</a>
 
 HEADERS
-{{"No."|right:4}} {{"From"|right:12}} Date
----- ------------ ------------------------
+{{"Unread"}} {{"No."|right:4}} {{"From"|right:12}} Date
+------ ---- ------------ ------------------------
 <p ng-repeat="doc in vm.documents">
-<a href="" ng-click="vm.getDocument(doc.id)">#{{doc.id|left:3}}</a> {{doc.from|right:12}} {{doc.time}}
+{{(doc.seen) ? ' ' : '*'|left:6}} <a href="" ng-click="vm.getDocument(doc.id)">#{{doc.id|left:3}}</a> {{doc.from|right:12}} {{doc.time}}
 <p>
 
 READ
