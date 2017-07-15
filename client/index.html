@@ -48,17 +48,25 @@
 <p>
 <a href="" ng-click="vm.getBoxes()">{{"Get"|left:25}}</a>
 
-{{"User:"}} {{vm.user|right:12}}
-
+HEADERS
 {{"No."|right:4}} {{"From"|right:12}} Date
 ---- ------------ ------------------------
 <p ng-repeat="doc in vm.documents">
 <a href="" ng-click="vm.getDocument(doc.id)">#{{doc.id|left:3}}</a> {{doc.from|right:12}} {{doc.time}}
 <p>
 
-To: <input ng-model="vm.to">
-Body
-----
+READ
+{{"To:"|left:12}} {{vm.to}}
+{{"From:"|left:12}} {{vm.user}}
+{{"Date:"|left:12}} {{vm.date}}
+--------------------------------------------------------------------------------
+{{vm.body}}
+
+COMPOSE
+{{"From:"|left:12}} {{vm.user}}
+{{"To:"|left:12}} <input ng-model="vm.to">
+{{"Date:"|left:12}} {{vm.date}}
+--------------------------------------------------------------------------------
 <textarea rows="20">{{vm.body}}</textarea>
 <a href="" ng-click="vm.send()">Send</a>
 

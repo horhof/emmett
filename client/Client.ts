@@ -66,6 +66,16 @@ export class Client
         to: this.to.split(','),
         body: this.body
       })
-      .then(res => this.response = res.message);
+      .then(res => {
+        this.response = res.message
+        this.body = '';
+        this.to = '';
+        log(`body=`, this.body);
+      });
+  }
+
+  public get date(): string
+  {
+    return new Date().toISOString();
   }
 }
