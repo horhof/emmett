@@ -8,11 +8,13 @@ import ExchangeCtrl from './ExchangeCtrl';
 const log = Debug(`Emmett:Server`);
 
 const cors = corsMiddleware({
+  preflightMaxAge: 5,
   origins: ['*']
 });
 
-const server = restify.createServer({ name: 'Emmett' });
+const server = restify.createServer({name: 'Emmett'});
 server.use(restify.plugins.bodyParser());
+server.use(cors.preflight);
 server.use(cors.actual);
 server.listen(4096, '0.0.0.0', () => log(`Server started.`));
 

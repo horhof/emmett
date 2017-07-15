@@ -26,6 +26,15 @@
         margin-bottom: -1em;
         padding: 0;
       }
+      input, textarea {
+        font-family: monospace;
+        font-size: 16px;
+        background-color: #222;
+        color: white;
+        border: 0;
+        width: 100%;
+        outline: none;
+      }
     </style>
   </head>
   <body>
@@ -47,9 +56,11 @@
 <a href="" ng-click="vm.getDocument(doc.id)">#{{doc.id|left:3}}</a> {{doc.from|right:12}} {{doc.time}}
 <p>
 
+To: <input ng-model="vm.to">
 Body
 ----
-{{vm.document.body}}
+<textarea rows="20">{{vm.body}}</textarea>
+<a href="" ng-click="vm.send()">Send</a>
 </pre>
 
     </div>

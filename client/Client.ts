@@ -6,9 +6,13 @@ export class Client
 
   public user: string;
 
+  public to: string;
+
   public documents: any[];
 
   public document: any;
+
+  public body: string;
 
   private rest: Restangular.IService;
 
@@ -49,5 +53,15 @@ export class Client
       .one('boxes', this.user)
       .one('documents', id)
       .get().$object;
+    this.body = this.document.body;
+  }
+
+  public send(): void
+  {
+    log(`#send>`);
+    this.rest
+      .one('boxes', this.user)
+      .all('documents')
+      .post(this.body);
   }
 }
