@@ -1,0 +1,219 @@
+{
+	"info": {
+		"_postman_id": "0c2e1994-b7ff-86d1-c659-748193055b9f",
+		"name": "Hieromail",
+		"description": "# Introduction\nWhat does your API do?\n\n# Overview\nThings that the developers should know about\n\n# Authentication\nWhat is the preferred way of using the API?\n\n# Error Codes\nWhat errors and status codes can a user expect?\n\n# Rate limit\nIs there a limit to the number of requests an user can send?",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Boxes",
+			"item": [
+				{
+					"name": "Read box listing",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/boxes",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"boxes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read box",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/boxes/:address",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"boxes",
+								":address"
+							],
+							"variable": [
+								{
+									"key": "address",
+									"value": "wallace"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create box",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/boxes/:address",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"boxes",
+								":address"
+							],
+							"variable": [
+								{
+									"key": "address",
+									"value": "wallace"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"item": [
+				{
+					"name": "List documents",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/boxes/:address/documents",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"boxes",
+								":address",
+								"documents"
+							],
+							"variable": [
+								{
+									"key": "address",
+									"value": "wallace"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read document",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server}}/boxes/:address/documents/:id",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"boxes",
+								":address",
+								"documents",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "address",
+									"value": "wallace"
+								},
+								{
+									"key": "id",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"to\": [\"edward\", \"wallace\"],\n  \"body\": \"hello\"\n}"
+						},
+						"url": {
+							"raw": "{{server}}/boxes/:address/documents",
+							"host": [
+								"{{server}}"
+							],
+							"path": [
+								"boxes",
+								":address",
+								"documents"
+							],
+							"variable": [
+								{
+									"key": "address",
+									"value": "wallace"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Emmett</title>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
-    <style>
-      body {
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hieromail</title>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+  <style>
+    body {
         background-color: #222;
         color: white;
       }
@@ -14,11 +15,18 @@
         color: #1e8ccc;
         text-decoration: none;
       }
+      h1,
+      h2,
       pre {
         font-family: monospace;
         font-size: 16px;
+        font-weight: normal;
         margin: 1em;
         line-height: 1.15;
+      }
+      h1, h2 {
+        text-transform: uppercase;
+        margin-top: 3em;
       }
       p {
         margin: 0;
@@ -36,41 +44,50 @@
         outline: none;
       }
       #debug {
-        display: none;
+        /*display: none;*/
       }
     </style>
-  </head>
-  <body>
-    <div class="container" ng-controller="client as vm">
+</head>
 
-<pre>
-BOXES
+<body>
+  <div class="container" ng-controller="client as vm">
+
+    <h2>Boxes</h2>
+    <pre>
 {{"Mailbox"|right:12}} {{"Messages"|left:12}}
 ---------------- --------
 <p ng-repeat="box in vm.boxes">
 <a href="" ng-click="vm.setUser(box.address)">{{box.address|right:12}}</a> {{box.size|left:12}}
 <p>
 <a href="" ng-click="vm.getBoxes()">{{"Get"|left:25}}</a>
+</pre>
 
-CREATE BOX
+    <h2>Create cabinet</h2>
+    <pre>
 {{"New box:"|left:12}} <input ng-model="vm.newBox">
 <a href="" ng-click="vm.createBox()">Create</a>
+</pre>
 
-HEADERS
+    <h2> Memo headers</h2>
+    <pre>
 {{"Unread"}} {{"No."|right:4}} {{"From"|right:12}} Date
 ------ ---- ------------ ------------------------
 <p ng-repeat="doc in vm.documents">
 {{(doc.seen) ? ' ' : '*'|left:6}} <a href="" ng-click="vm.getDocument(doc.id)">#{{doc.id|left:3}}</a> {{doc.from|right:12}} {{doc.time}}
 <p>
+</pre>
 
-READ
+    <h2>Read memo</h2>
+    <pre>
 {{"To:"|left:12}} {{vm.to}}
 {{"From:"|left:12}} {{vm.user}}
 {{"Date:"|left:12}} {{vm.date}}
 --------------------------------------------------------------------------------
 {{vm.body}}
+</pre>
 
-COMPOSE
+    <h2>Compose memo</h2>
+    <pre>
 {{"From:"|left:12}} {{vm.user}}
 {{"To:"|left:12}} <input ng-model="vm.to">
 {{"Date:"|left:12}} {{vm.date}}
@@ -82,10 +99,11 @@ Response: {{vm.response}}
 </pre>
 
 
-<pre id="debug">
+    <pre id="debug">
 {{vm|json}}
 </pre>
-    </div>
-    <script data-main="setup.js" type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
-  </body>
+  </div>
+  <script data-main="setup.js" type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js"></script>
+</body>
+
 </html>

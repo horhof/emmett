@@ -4,8 +4,8 @@ import * as restify from 'restify';
 
 const log = Debug(`Emmett:Ctrl:Exchange`);
 
-import Box from './Box';
-import Exchange from './Exchange';
+import Box from '../Box';
+import Exchange from '../Exchange';
 
 export default class ExchangeCtrl
 {
